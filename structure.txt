@@ -1,0 +1,44 @@
+/BIBLIOTHEQUE/
+├── /config/
+│   └── db.php                    # Connexion PDO
+│
+├── /models/                     # Classes représentant les tables
+│   ├── Livre.php
+│   ├── Auteur.php
+│   ├── Utilisateur.php
+│   ├── Exemplaire.php
+│   ├── Emprunt.php
+│   └── Rayon.php
+│
+├── /controllers/
+│   ├── livreController.php
+│   ├── auteurController.php
+│   ├── utilisateurController.php
+│   ├── exemplaireController.php
+│   ├── empruntController.php
+│   └── rayonController.php
+│
+├── /views/
+│   ├── livres/
+│   │   ├── index.php
+│   │   ├── ajouter.php
+│   │   ├── modifier.php
+│   │   └── supprimer.php
+│   └── ... (idem pour auteurs, utilisateurs, etc.)
+│
+├── /includes/
+│   ├── header.php
+│   ├── footer.php
+│   └── navbar.php
+│
+├── /public/
+│   ├── index.php                # Page d’accueil/connexion
+│   ├── dashboard.php            # Page de tableau de bord
+│   ├── css/
+│   │   └── style.css
+│   └── js/
+│       └── script.js
+│
+├── .htaccess
+├── .env (optionnel)
+└── README.md
