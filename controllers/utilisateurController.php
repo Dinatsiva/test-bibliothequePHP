@@ -1,45 +1,47 @@
 <?php
-class UtilisateurController {
-    private $db;
-    private $utilisateurModel;
+session_start();
+require_once __DIR__ . "/../config/db.php";
+require_once __DIR__ . "/../models/Utilisateur.php";
 
-    public function __construct() {
-        require_once __DIR__ . '/../config/db.php';
-        $this->db = (new Database())->getConnection();
-        require_once __DIR__ . '/../models/Utilisateur.php';
-        $this->utilisateurModel = new Utilisateur($this->db);
-    }
+$database = new Database();
+$db = $database->getConnection();
+$utilisateur = new Utilisateur($db);
 
-    public function login() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $email = $_POST['email'] ?? '';
-            $mot_de_passe = $_POST['mot_de_passe'] ?? '';
+// LOGIN
+if (isset($_POST['action']) && $_POST['action'] === 'login') {
+    $email = $_POST['email'];
+    $mot_de_passe = $_POST['mot_de_passe'];
 
-            $user = $this->utilisateurModel->findByEmail($email);
+    $user = $utilisateur->login($email, $mot_de_passe);
 
-            if ($user && password_verify($mot_de_passe, $user['mot_de_passe'])) {
-                $_SESSION['user'] = $user;
-                header("Location: index.php?action=dashboard");
-                exit;
-            } else {
-                $error = "Identifiants incorrects";
-            }
-        }
-        include __DIR__ . '/../views/utilisateurs/login.php';
-    }
+    if ($user) {
+        $_SESSION['user_id'] = $user['id_utilisateur'];
+        $_SESSION['user_nom'] = $user['nom'];
+        $_SESSION['user_prenom'] = $user['prenom'];
+        $_SESSION['user_role'] = $user['role'];
 
-    public function register() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->utilisateurModel->create($_POST);
-            header("Location: index.php?action=login");
-            exit;
-        }
-        include __DIR__ . '/../views/utilisateurs/register.php';
-    }
-
-    public function logout() {
-        session_destroy();
-        header("Location: index.php?action=login");
+        header("Location: ../public/dashboard.php");
+        exit;
+    } else {
+        header("Location: ../public/index.php?error=1");
         exit;
     }
 }
+
+// LOGOUT
+if (isset($_GET['action']) && $_GET['action'] === 'logout') {
+    session_destroy();
+    header("Location: ../public/index.php");
+    exit;
+}
+
+// SUPPRIMER utilisateur
+if (isset($_GET['action']) && $_GET['action'] === 'supprimer' && isset($_GET['id'])) {
+    $utilisateur->supprimer($_GET['id']);
+    header("Location: ../views/utilisateurs/index.php?success=1");
+    exit;
+}
+
+// LISTER utilisateurs
+$users = $utilisateur->lister();
+?>

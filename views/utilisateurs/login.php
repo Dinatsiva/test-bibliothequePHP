@@ -1,19 +1,32 @@
-<?php include __DIR__ . '/../../includes/header.php'; ?>
-<div class="container mt-5">
+<?php
+session_start();
+if (isset($_SESSION['user_id'])) {
+    header("Location: ../../public/dashboard.php");
+    exit;
+}
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Connexion</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+</head>
+<body>
+<div class="container">
     <h2>Connexion</h2>
-    <?php if (!empty($error)): ?>
-        <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
-    <?php endif; ?>
-    <form method="post" action="">
-        <div class="mb-3">
+    <?php if(isset($_GET['error'])) echo "<p style='color:red'>Email ou mot de passe incorrect</p>"; ?>
+    <form action="../../controllers/utilisateurController.php" method="POST">
+        <input type="hidden" name="action" value="login">
+        <div>
             <label>Email</label>
-            <input type="email" name="email" class="form-control" required>
+            <input type="email" name="email" required>
         </div>
-        <div class="mb-3">
+        <div>
             <label>Mot de passe</label>
-            <input type="password" name="mot_de_passe" class="form-control" required>
+            <input type="password" name="mot_de_passe" required>
         </div>
-        <button type="submit" class="btn btn-primary">Se connecter</button>
+        <button type="submit">Se connecter</button>
     </form>
 </div>
-<?php include __DIR__ . '/../../includes/footer.php'; ?>
+</body>
+</html>

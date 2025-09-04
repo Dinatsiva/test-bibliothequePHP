@@ -152,3 +152,5 @@ git push
 
 
 👉 Tu veux que je t’écrive les commandes exactes dans l’ordre à copier-coller dans ton terminal, vu ta situation actuelle ?
+
+tree /F

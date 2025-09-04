@@ -1,74 +1,71 @@
 <?php
-require_once __DIR__ . "/../config/db.php";
-
 class Livre {
     private $conn;
     private $table = "livre";
 
-    public $id_livre;
-    public $titre;
-    public $annee_publication;
-    public $genre;
-    public $langue;
-    public $isbn;
-    public $quantite;
-    public $id_auteur;
-
-    public function __construct() {
-        $database = new Database();
-        $this->conn = $database->getConnection();
-    }
-
-    // Récupérer tous les livres
-    public function getAll() {
-        $query = "SELECT * FROM " . $this->table . " ORDER BY titre ASC";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        return $stmt;
+    public function __construct($db) {
+        $this->conn = $db;
     }
 
     // Ajouter un livre
-    public function create() {
-        $query = "INSERT INTO " . $this->table . " 
-                 (titre, annee_publication, genre, langue, isbn, quantite, id_auteur)
-                  VALUES (:titre, :annee_publication, :genre, :langue, :isbn, :quantite, :id_auteur)";
-        $stmt = $this->conn->prepare($query);
-
-        $stmt->bindParam(":titre", $this->titre);
-        $stmt->bindParam(":annee_publication", $this->annee_publication);
-        $stmt->bindParam(":genre", $this->genre);
-        $stmt->bindParam(":langue", $this->langue);
-        $stmt->bindParam(":isbn", $this->isbn);
-        $stmt->bindParam(":quantite", $this->quantite);
-        $stmt->bindParam(":id_auteur", $this->id_auteur);
-
+    public function ajouter($titre, $id_auteur, $annee_publication, $genre, $langue, $isbn, $quantite) {
+        $sql = "INSERT INTO $this->table (titre, id_auteur, annee_publication, genre, langue, isbn, quantite)
+                VALUES (:titre, :id_auteur, :annee_publication, :genre, :langue, :isbn, :quantite)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(":titre", $titre);
+        $stmt->bindParam(":id_auteur", $id_auteur);
+        $stmt->bindParam(":annee_publication", $annee_publication);
+        $stmt->bindParam(":genre", $genre);
+        $stmt->bindParam(":langue", $langue);
+        $stmt->bindParam(":isbn", $isbn);
+        $stmt->bindParam(":quantite", $quantite);
         return $stmt->execute();
     }
 
     // Modifier un livre
-    public function update() {
-        $query = "UPDATE " . $this->table . " 
-                  SET titre=:titre, annee_publication=:annee_publication, genre=:genre, langue=:langue, isbn=:isbn, quantite=:quantite, id_auteur=:id_auteur
-                  WHERE id_livre=:id_livre";
-        $stmt = $this->conn->prepare($query);
-
-        $stmt->bindParam(":titre", $this->titre);
-        $stmt->bindParam(":annee_publication", $this->annee_publication);
-        $stmt->bindParam(":genre", $this->genre);
-        $stmt->bindParam(":langue", $this->langue);
-        $stmt->bindParam(":isbn", $this->isbn);
-        $stmt->bindParam(":quantite", $this->quantite);
-        $stmt->bindParam(":id_auteur", $this->id_auteur);
-        $stmt->bindParam(":id_livre", $this->id_livre);
-
+    public function modifier($id_livre, $titre, $id_auteur, $annee_publication, $genre, $langue, $isbn, $quantite) {
+        $sql = "UPDATE $this->table 
+                SET titre = :titre, id_auteur = :id_auteur, annee_publication = :annee_publication,
+                    genre = :genre, langue = :langue, isbn = :isbn, quantite = :quantite
+                WHERE id_livre = :id_livre";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(":id_livre", $id_livre);
+        $stmt->bindParam(":titre", $titre);
+        $stmt->bindParam(":id_auteur", $id_auteur);
+        $stmt->bindParam(":annee_publication", $annee_publication);
+        $stmt->bindParam(":genre", $genre);
+        $stmt->bindParam(":langue", $langue);
+        $stmt->bindParam(":isbn", $isbn);
+        $stmt->bindParam(":quantite", $quantite);
         return $stmt->execute();
     }
 
     // Supprimer un livre
-    public function delete() {
-        $query = "DELETE FROM " . $this->table . " WHERE id_livre = :id_livre";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id_livre", $this->id_livre);
+    public function supprimer($id_livre) {
+        $sql = "DELETE FROM $this->table WHERE id_livre = :id_livre";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(":id_livre", $id_livre);
         return $stmt->execute();
     }
+
+    // Lister tous les livres
+    public function lister() {
+        $sql = "SELECT l.*, a.nom AS auteur_nom, a.prenom AS auteur_prenom 
+                FROM $this->table l
+                LEFT JOIN auteur a ON l.id_auteur = a.id_auteur
+                ORDER BY l.titre ASC";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    // Obtenir un livre par ID
+    public function getById($id_livre) {
+        $sql = "SELECT * FROM $this->table WHERE id_livre = :id_livre LIMIT 1";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(":id_livre", $id_livre);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
+?>

@@ -1,22 +1,31 @@
-<?php include __DIR__ . "/../../includes/header.php"; ?>
-<h2>Liste des livres</h2>
-<a href="index.php?action=ajouter_livre" class="btn btn-primary">Ajouter un livre</a>
-<table border="1" cellpadding="10">
-    <tr>
-        <th>ID</th><th>Titre</th><th>Auteur</th><th>Année</th><th>Quantité</th><th>Actions</th>
-    </tr>
-    <?php foreach($livres as $livre): ?>
-    <tr>
-        <td><?= $livre['id_livre']; ?></td>
-        <td><?= $livre['titre']; ?></td>
-        <td><?= $livre['id_auteur']; ?></td>
-        <td><?= $livre['annee_publication']; ?></td>
-        <td><?= $livre['quantite']; ?></td>
-        <td>
-            <a href="index.php?action=modifier_livre&id=<?= $livre['id_livre']; ?>">Modifier</a> | 
-            <a href="index.php?action=supprimer_livre&id=<?= $livre['id_livre']; ?>">Supprimer</a>
-        </td>
-    </tr>
-    <?php endforeach; ?>
-</table>
-<?php include __DIR__ . "/../../includes/footer.php"; ?>
+<?php include("../includes/header.php"); ?>
+<div class="container mt-4">
+    <h2>Liste des livres</h2>
+    <a href="ajouter.php" class="btn btn-success mb-3">Ajouter un livre</a>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th><th>Titre</th><th>Auteur</th><th>Année</th><th>Genre</th><th>Langue</th><th>Quantité</th><th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php while ($row = $livres->fetch(PDO::FETCH_ASSOC)): ?>
+                <tr>
+                    <td><?= $row['id_livre'] ?></td>
+                    <td><?= htmlspecialchars($row['titre']) ?></td>
+                    <td><?= htmlspecialchars($row['auteur_nom'].' '.$row['auteur_prenom']) ?></td>
+                    <td><?= $row['annee_publication'] ?></td>
+                    <td><?= $row['genre'] ?></td>
+                    <td><?= $row['langue'] ?></td>
+                    <td><?= $row['quantite'] ?></td>
+                    <td>
+                        <a href="modifier.php?id=<?= $row['id_livre'] ?>" class="btn btn-warning btn-sm">Modifier</a>
+                        <a href="../../controllers/livreController.php?action=supprimer&id=<?= $row['id_livre'] ?>" 
+                           onclick="return confirm('Supprimer ce livre ?');" class="btn btn-danger btn-sm">Supprimer</a>
+                    </td>
+                </tr>
+            <?php endwhile; ?>
+        </tbody>
+    </table>
+</div>
+<?php include("../includes/footer.php"); ?>
