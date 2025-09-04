@@ -3,13 +3,14 @@ session_start();
 require_once __DIR__ . "/../config/db.php";
 require_once __DIR__ . "/../models/Utilisateur.php";
 
+// Connexion à la BDD
 $database = new Database();
 $db = $database->getConnection();
 $utilisateur = new Utilisateur($db);
 
 // LOGIN
 if (isset($_POST['action']) && $_POST['action'] === 'login') {
-    $email = $_POST['email'];
+    $email = trim($_POST['email']);
     $mot_de_passe = $_POST['mot_de_passe'];
 
     $user = $utilisateur->login($email, $mot_de_passe);
@@ -20,10 +21,12 @@ if (isset($_POST['action']) && $_POST['action'] === 'login') {
         $_SESSION['user_prenom'] = $user['prenom'];
         $_SESSION['user_role'] = $user['role'];
 
-        header("Location: ../public/dashboard.php");
+        // après login réussi
+        header("Location: dashboard.php"); // relatif à public/
         exit;
+
     } else {
-        header("Location: ../public/index.php?error=1");
+        header("Location: /login.php?error=1");
         exit;
     }
 }
@@ -31,7 +34,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'login') {
 // LOGOUT
 if (isset($_GET['action']) && $_GET['action'] === 'logout') {
     session_destroy();
-    header("Location: ../public/index.php");
+    header("Location: ../public/login.php");
     exit;
 }
 

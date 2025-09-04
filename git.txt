@@ -147,7 +147,7 @@ git push -u origin main
 Ensuite tu pourras continuer avec :
 
 git add .
-git commit -m "pause1"
+git commit -m "pause2"
 git push
 
 

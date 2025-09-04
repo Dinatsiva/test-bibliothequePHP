@@ -61,5 +61,21 @@ class Exemplaire {
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    public function rechercher($mot_cle) {
+    $sql = "SELECT ex.*, l.titre AS livre_titre, r.nom AS rayon_nom
+            FROM exemplaire ex
+            LEFT JOIN livre l ON ex.id_livre = l.id_livre
+            LEFT JOIN rayon r ON ex.id_rayon = r.id_rayon
+            WHERE ex.id_exemplaire = :mot_cle_exact
+               OR l.titre LIKE :mot_cle
+               OR r.nom LIKE :mot_cle
+            ORDER BY ex.id_exemplaire ASC";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindValue(":mot_cle", "%$mot_cle%");
+    $stmt->bindValue(":mot_cle_exact", $mot_cle);
+    $stmt->execute();
+    return $stmt;
+}
+
 }
 ?>

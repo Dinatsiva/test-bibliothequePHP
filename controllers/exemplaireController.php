@@ -30,6 +30,12 @@ if(isset($_GET['action']) && $_GET['action'] === 'supprimer' && isset($_GET['id'
     header("Location: ../views/exemplaires/index.php?success=1");
     exit;
 }
+if(isset($_GET['action']) && $_GET['action'] === 'recherche' && isset($_GET['q'])) {
+    $q = $_GET['q'];
+    $resultats = $objet->rechercher($q)->fetchAll(PDO::FETCH_ASSOC);
+} else {
+    $resultats = $objet->lister()->fetchAll(PDO::FETCH_ASSOC);
+}
 
 // Lister les exemplaires
 $exemplaires = $exemplaire->lister()->fetchAll(PDO::FETCH_ASSOC);

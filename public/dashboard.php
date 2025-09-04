@@ -18,6 +18,18 @@ require_once "../controllers/dashboardController.php";
 <body>
 <div class="container">
     <h2>Bienvenue <?= $_SESSION['user_prenom'] ?> <?= $_SESSION['user_nom'] ?></h2>
+    <form method="GET" action="">
+    <input type="text" name="q" placeholder="Rechercher..." value="<?= isset($_GET['q']) ? htmlspecialchars($_GET['q']) : '' ?>">
+    <select name="module">
+        <option value="livres">Livres</option>
+        <option value="auteurs">Auteurs</option>
+        <option value="utilisateurs" <?= $_SESSION['user_role'] === 'admin' ? '' : 'disabled' ?>>Utilisateurs</option>
+        <option value="emprunts">Emprunts</option>
+        <option value="exemplaires">Exemplaires</option>
+    </select>
+    <button type="submit">Rechercher</button>
+</form>
+
     <p>Rôle : <?= $_SESSION['user_role'] ?></p>
     <a href="../controllers/utilisateurController.php?action=logout">Se déconnecter</a>
 
@@ -51,6 +63,28 @@ require_once "../controllers/dashboardController.php";
             <li><a href="../views/emprunts/index.php">Voir mes emprunts</a></li>
         </ul>
     <?php endif; ?>
+    <?php if(!empty($recherche_resultats)): ?>
+    <h3>Résultats de la recherche (<?= htmlspecialchars($q) ?>)</h3>
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <?php foreach(array_keys($recherche_resultats[0]) as $colonne): ?>
+                    <th><?= htmlspecialchars($colonne) ?></th>
+                <?php endforeach; ?>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach($recherche_resultats as $row): ?>
+                <tr>
+                    <?php foreach($row as $val): ?>
+                        <td><?= htmlspecialchars($val) ?></td>
+                    <?php endforeach; ?>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+<?php endif; ?>
+
 </div>
 </body>
 </html>

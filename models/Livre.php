@@ -48,15 +48,62 @@ class Livre {
         return $stmt->execute();
     }
 
-    // Lister tous les livres
-    public function lister() {
+    // Lister les livres avec pagination
+    public function lister($limit = 10, $offset = 0) {
         $sql = "SELECT l.*, a.nom AS auteur_nom, a.prenom AS auteur_prenom 
                 FROM $this->table l
                 LEFT JOIN auteur a ON l.id_auteur = a.id_auteur
-                ORDER BY l.titre ASC";
+                ORDER BY l.titre ASC
+                LIMIT :offset, :limit";
         $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(":offset", $offset, PDO::PARAM_INT);
+        $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt;
+    }
+
+    // Recherche avec pagination
+    public function rechercher($mot_cle, $limit = 10, $offset = 0) {
+        $sql = "SELECT l.*, a.nom AS auteur_nom, a.prenom AS auteur_prenom
+                FROM livre l
+                LEFT JOIN auteur a ON l.id_auteur = a.id_auteur
+                WHERE l.titre LIKE :mot_cle
+                   OR l.id_livre = :mot_cle_exact
+                   OR l.annee_publication LIKE :mot_cle
+                   OR a.nom LIKE :mot_cle
+                   OR a.prenom LIKE :mot_cle
+                ORDER BY l.titre ASC
+                LIMIT :offset, :limit";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":mot_cle", "%$mot_cle%");
+        $stmt->bindValue(":mot_cle_exact", $mot_cle);
+        $stmt->bindParam(":offset", $offset, PDO::PARAM_INT);
+        $stmt->bindParam(":limit", $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    // Compter tous les livres (pour pagination)
+    public function countTotal() {
+        $stmt = $this->conn->query("SELECT COUNT(*) FROM $this->table");
+        return $stmt->fetchColumn();
+    }
+
+    // Compter les résultats de recherche (pour pagination)
+    public function countRecherche($mot_cle) {
+        $sql = "SELECT COUNT(*) 
+                FROM livre l
+                LEFT JOIN auteur a ON l.id_auteur = a.id_auteur
+                WHERE l.titre LIKE :mot_cle
+                   OR l.id_livre = :mot_cle_exact
+                   OR l.annee_publication LIKE :mot_cle
+                   OR a.nom LIKE :mot_cle
+                   OR a.prenom LIKE :mot_cle";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":mot_cle", "%$mot_cle%");
+        $stmt->bindValue(":mot_cle_exact", $mot_cle);
+        $stmt->execute();
+        return $stmt->fetchColumn();
     }
 
     // Obtenir un livre par ID

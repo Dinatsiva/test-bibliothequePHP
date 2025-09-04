@@ -54,4 +54,41 @@ if($role === 'admin') {
     $stmt->execute();
     $stats['emprunts_en_retard'] = $stmt->fetch(PDO::FETCH_ASSOC)['emprunts_en_retard'];
 }
+$recherche_resultats = [];
+
+if(isset($_GET['q']) && !empty($_GET['q']) && isset($_GET['module'])) {
+    $q = $_GET['q'];
+    $module = $_GET['module'];
+
+    switch($module) {
+        case 'livres':
+            require_once __DIR__ . "/../models/Livre.php";
+            $livre = new Livre($db);
+            $recherche_resultats = $livre->rechercher($q)->fetchAll(PDO::FETCH_ASSOC);
+            break;
+        case 'auteurs':
+            require_once __DIR__ . "/../models/Auteur.php";
+            $auteur = new Auteur($db);
+            $recherche_resultats = $auteur->rechercher($q)->fetchAll(PDO::FETCH_ASSOC);
+            break;
+        case 'utilisateurs':
+            if($_SESSION['user_role'] === 'admin'){
+                require_once __DIR__ . "/../models/Utilisateur.php";
+                $utilisateur = new Utilisateur($db);
+                $recherche_resultats = $utilisateur->rechercher($q)->fetchAll(PDO::FETCH_ASSOC);
+            }
+            break;
+        case 'emprunts':
+            require_once __DIR__ . "/../models/Emprunt.php";
+            $emprunt = new Emprunt($db);
+            $recherche_resultats = $emprunt->rechercher($q)->fetchAll(PDO::FETCH_ASSOC);
+            break;
+        case 'exemplaires':
+            require_once __DIR__ . "/../models/Exemplaire.php";
+            $exemplaire = new Exemplaire($db);
+            $recherche_resultats = $exemplaire->rechercher($q)->fetchAll(PDO::FETCH_ASSOC);
+            break;
+    }
+}
+
 ?>

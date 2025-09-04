@@ -12,6 +12,12 @@ require_once "../../controllers/exemplaireController.php";
 <?php if(isset($_GET['success'])) echo "<p style='color:green;'>Action réussie!</p>"; ?>
 
 <a href="ajouter.php">Ajouter un exemplaire</a>
+<form method="GET" action="index.php">
+    <input type="hidden" name="action" value="recherche">
+    <input type="text" name="q" placeholder="Rechercher...">
+    <button type="submit">Rechercher</button>
+</form>
+
 <table border="1">
 <tr>
     <th>ID</th>

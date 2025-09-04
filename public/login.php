@@ -1,22 +1,16 @@
-<?php
-session_start();
-if (isset($_SESSION['user_id'])) {
-    header("Location: ../../public/dashboard.php");
-    exit;
-}
-?>
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html>
 <head>
     <title>Connexion</title>
-    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div class="container">
     <h2>Connexion</h2>
     <?php if(isset($_GET['error'])) echo "<p style='color:red'>Email ou mot de passe incorrect</p>"; ?>
-    <form action="../../controllers/utilisateurController.php" method="POST">
-        <input type="hidden" name="action" value="login">
+    <form action="controllers/utilisateurController.php" method="POST">
+    <input type="hidden" name="action" value="login">
         <div>
             <label>Email</label>
             <input type="email" name="email" required>
